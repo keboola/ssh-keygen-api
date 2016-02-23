@@ -31,7 +31,7 @@ class FunctionalTest extends WebTestCase
     {
         /** @var Client $client */
         $client = $this->createClient();
-        $client->request('POST', 'keys');
+        $client->request('POST', '/');
         $response = $client->getResponse();
 
         $responseJson = json_decode($response->getContent(), true);
