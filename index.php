@@ -7,25 +7,36 @@ require_once __DIR__.'/vendor/autoload.php';
 
 $app = new Silex\Application();
 
-$app['debug'] = true;
-
 $app->get('/', function () use ($app) {
     return $app->json([
-        'SSH Keygen API'
+        'app' => 'SSH Keygen API',
+        'usage' => [
+            'POST /keys' => 'Generate Private and Public keys'
+        ]
     ]);
 });
 
 $app->post('/keys', function (Request $request) use ($app) {
+
     $process = new Process("ssh-keygen -b 2048 -t rsa -f ./ssh.key -N '' -q");
-    $process->run();
+    $process->setWorkingDirectory(__DIR__);
 
-    $privateKey = file_get_contents('ssh.key');
-    $publicKey = file_get_contents('ssh.key.pub');
+    try {
+        $process->run();
 
-    unlink('./ssh.key');
-    unlink('./ssh.key.pub');
+        $privateKey = file_get_contents('ssh.key');
+        $publicKey = file_get_contents('ssh.key.pub');
 
-    // return public key
+        unlink('./ssh.key');
+        unlink('./ssh.key.pub');
+    } catch (\Exception $e) {
+        return $app->json([
+            'status' => 'error',
+            'output' => $process->getOutput(),
+            'errorOutput' => $process->getErrorOutput()
+        ], 500);
+    }
+
     return $app->json([
         'private' => $privateKey,
         'public' => $publicKey
