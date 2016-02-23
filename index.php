@@ -23,7 +23,7 @@ $app->post('/', function (Request $request) use ($app) {
     $process->setWorkingDirectory(__DIR__);
 
     try {
-        $process->run();
+        $process->mustRun();
 
         $privateKey = file_get_contents('ssh.key');
         $publicKey = file_get_contents('ssh.key.pub');
