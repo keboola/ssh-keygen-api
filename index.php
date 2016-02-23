@@ -1,6 +1,7 @@
 <?php
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Process;
 
 require_once __DIR__.'/vendor/autoload.php';
@@ -35,13 +36,13 @@ $app->post('/', function (Request $request) use ($app) {
             'status' => 'error',
             'output' => $process->getOutput(),
             'errorOutput' => $process->getErrorOutput()
-        ], 500);
+        ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     return $app->json([
         'private' => $privateKey,
         'public' => $publicKey
-    ], 201);
+    ], Response::HTTP_CREATED);
 });
 
 $app->run();
