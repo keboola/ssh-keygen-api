@@ -3,3 +3,5 @@ sudo: false
 language: php
 
 install: composer install -n
+
+script: php vendor/bin/phpunit
