@@ -1,3 +1,5 @@
 sudo: false
 
 language: php
+
+install: composer install -n
