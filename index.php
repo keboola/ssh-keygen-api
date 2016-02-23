@@ -11,12 +11,13 @@ $app->get('/', function () use ($app) {
     return $app->json([
         'app' => 'SSH Keygen API',
         'usage' => [
-            'POST /keys' => 'Generate Private and Public keys'
+            'GET /' => 'This info',
+            'POST /' => 'Generate Private and Public keys'
         ]
     ]);
 });
 
-$app->post('/keys', function (Request $request) use ($app) {
+$app->post('/', function (Request $request) use ($app) {
 
     $process = new Process("ssh-keygen -b 2048 -t rsa -f ./ssh.key -N '' -q");
     $process->setWorkingDirectory(__DIR__);
