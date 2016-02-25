@@ -1,6 +1,7 @@
 <?php
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Process;
 
 require_once __DIR__.'/vendor/autoload.php';
@@ -19,29 +20,32 @@ $app->get('/', function () use ($app) {
 
 $app->post('/', function (Request $request) use ($app) {
 
-    $process = new Process("ssh-keygen -b 2048 -t rsa -f ./ssh.key -N '' -q");
-    $process->setWorkingDirectory(__DIR__);
+    $workingDir = __DIR__;
+    $privateKeyFile = $workingDir . '/ssh.key';
+    $publicKeyFile = $privateKeyFile . '.pub';
+
+    $process = new Process("ssh-keygen -b 2048 -t rsa -f " . $privateKeyFile . " -N '' -q");
 
     try {
-        $process->run();
+        $process->mustRun();
 
-        $privateKey = file_get_contents('ssh.key');
-        $publicKey = file_get_contents('ssh.key.pub');
+        $privateKey = file_get_contents($privateKeyFile);
+        $publicKey = file_get_contents($publicKeyFile);
 
-        unlink('./ssh.key');
-        unlink('./ssh.key.pub');
+        unlink($privateKeyFile);
+        unlink($publicKeyFile);
     } catch (\Exception $e) {
         return $app->json([
             'status' => 'error',
             'output' => $process->getOutput(),
             'errorOutput' => $process->getErrorOutput()
-        ], 500);
+        ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     return $app->json([
         'private' => $privateKey,
         'public' => $publicKey
-    ], 201);
+    ], Response::HTTP_CREATED);
 });
 
 $app->run();
