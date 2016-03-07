@@ -56,6 +56,10 @@ $app->post('/', function (Request $request) use ($app) {
     ], Response::HTTP_CREATED);
 });
 
+$app->after(function (Request $request, Response $response) {
+    $response->headers->set('Access-Control-Allow-Origin', '*');
+});
+
 $app->run();
 
 return $app;
