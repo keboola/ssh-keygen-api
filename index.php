@@ -5,6 +5,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Process;
 
 require_once __DIR__.'/vendor/autoload.php';
+// CORS preflight request handle
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+	header('Access-Control-Allow-Origin: *');
+	header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+	header('Access-Control-Allow-Headers: content-type, x-requested-with, x-storageapi-token, x-kbc-runid, x-requested-by, x-user-agent, x-kbc-manageapitoken');
+	header('Access-Control-Max-Age: 86400'); // preflight timeout
+	die();
+}
 
 $app = new Silex\Application();
 
